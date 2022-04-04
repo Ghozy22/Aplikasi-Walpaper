@@ -1,0 +1,6 @@
+class wallpaperModel{
+
+  String photographer;
+  
+
+}
