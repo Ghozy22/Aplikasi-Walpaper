@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:wallpaper/data/data.dart';
 import 'package:wallpaper/model/kategori_model.dart';
+import 'package:wallpaper/model/wallpaper_model.dart';
 import 'package:wallpaper/view/widget/widget.dart';
 import 'package:http/http.dart' as http;
 
@@ -17,6 +18,8 @@ class _HomeViewState extends State<HomeView> {
 
   List<kategori> kategoris = [];
 
+  List<wallpaperModel> wpmodel = [];
+
   TrendingWallpaper() async {
     var response = await http.get(Uri.parse("https://api.pexels.com/v1/curated?per_page=1"),
       headers: {
@@ -29,8 +32,15 @@ class _HomeViewState extends State<HomeView> {
       Map<String, dynamic> jsonData = jsonDecode(response.body);
       jsonData["photos"].forEach((element){
       // print(element);
+      wallpaperModel WallpaperModel = new wallpaperModel();
+      WallpaperModel = wallpaperModel.fromMap(element);
+      wpmodel.add(WallpaperModel);
+    });
+
+    setState(() {
       
     });
+
   }
 
   @override
@@ -84,10 +94,16 @@ class _HomeViewState extends State<HomeView> {
                 scrollDirection: Axis.horizontal,
                 itemCount: kategoris.length,
                 itemBuilder: (context, index){
-                  return TileKategori(imageURL: kategoris[index].imagURL.toString(), title: kategoris[index].NamaKategori.toString());
+                  return TileKategori(
+                    imageURL: kategoris[index].imagURL.toString(),
+                    title: kategoris[index].NamaKategori.toString());
                 }
               ),
-            )
+            ),
+            SizedBox(
+              height: 16,
+            ),
+            ListWallpaper(wpmodel: wpmodel, context: context)
           ],
         ),
       ),
@@ -112,7 +128,10 @@ class TileKategori extends StatelessWidget {
             child: Image.network(imageURL, height: 50, width: 100, fit: BoxFit.cover,)
           ),
           Container(
-            color: Colors.black26,
+            decoration: BoxDecoration(
+              color: Colors.black26,
+              borderRadius: BorderRadius.circular(8)
+            ),
             height: 50, width: 100,
             alignment: Alignment.center,
             child: Text(title, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),),
@@ -122,3 +141,4 @@ class TileKategori extends StatelessWidget {
     );
   }
 }
+
