@@ -4,8 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:wallpaper/data/data.dart';
 import 'package:wallpaper/model/kategori_model.dart';
 import 'package:wallpaper/model/wallpaper_model.dart';
+import 'package:wallpaper/view/category_view.dart';
+import 'package:wallpaper/view/search_view.dart';
+import 'package:wallpaper/view/showImage_view.dart';
 import 'package:wallpaper/view/widget/widget.dart';
 import 'package:http/http.dart' as http;
+
 
 class HomeView extends StatefulWidget {
   const HomeView({ Key? key }) : super(key: key);
@@ -20,8 +24,10 @@ class _HomeViewState extends State<HomeView> {
 
   List<wallpaperModel> wpmodel = [];
 
+  TextEditingController searchController = new TextEditingController();
+
   TrendingWallpaper() async {
-    var response = await http.get(Uri.parse("https://api.pexels.com/v1/curated?per_page=1"),
+    var response = await http.get(Uri.parse("https://api.pexels.com/v1/curated?per_page=100&page=1"),
       headers: {
         "Authorization" : apiKey
       }
@@ -59,52 +65,63 @@ class _HomeViewState extends State<HomeView> {
         elevation: 0.0,
         backgroundColor: Colors.white,
       ),
-      body: Container(
-        child: Column(
-          children: <Widget>[
-            Container(
-              decoration: BoxDecoration(
-                color: Color(0xfff5f8fd),
-                borderRadius: BorderRadius.circular(30)
-              ),
-              padding: EdgeInsets.symmetric(horizontal: 24),
-              margin: EdgeInsets.symmetric(horizontal: 24),
-              child: Row(
-                children: <Widget> [
-                  Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Search',
-                        border: InputBorder.none
+      body: SingleChildScrollView(
+        child: Container(
+          child: Column(
+            children: <Widget>[
+              Container(
+                decoration: BoxDecoration(
+                  color: Color(0xfff5f8fd),
+                  borderRadius: BorderRadius.circular(30)
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 24),
+                margin: EdgeInsets.symmetric(horizontal: 24),
+                child: Row(
+                  children: <Widget> [
+                    Expanded(
+                      child: TextField(
+                        controller: searchController,
+                        decoration: InputDecoration(
+                          hintText: 'Search',
+                          border: InputBorder.none
+                        ),
                       ),
                     ),
-                  ),
-                  Icon(Icons.search)
-                ],
+                    GestureDetector(
+                        onTap: (){
+                      Navigator.push(context,MaterialPageRoute(
+                        builder: (context) => Search(searchKey: searchController.text,
+                        ),
+                        ),
+                      );
+                      },
+                      child: Container(
+                        child: Icon(Icons.search)
+                      )
+                    )
+                  ],
+                ),
               ),
-            ),
-            SizedBox(
-              height: 16,
-            ),
-            Container(
-              height: 80,
-              child: ListView.builder(
-                padding: EdgeInsets.symmetric(horizontal: 24),
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemCount: kategoris.length,
-                itemBuilder: (context, index){
-                  return TileKategori(
-                    imageURL: kategoris[index].imagURL.toString(),
-                    title: kategoris[index].NamaKategori.toString());
-                }
+              SizedBox(
+                height: 16,
               ),
-            ),
-            SizedBox(
-              height: 16,
-            ),
-            ListWallpaper(wpmodel: wpmodel, context: context)
-          ],
+              Container(
+                height: 80,
+                child: ListView.builder(
+                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: kategoris.length,
+                  itemBuilder: (context, index){
+                    return TileKategori(
+                      imageURL: kategoris[index].imagURL.toString(),
+                      title: kategoris[index].NamaKategori.toString());
+                  }
+                ),
+              ),
+              ListWallpaper(wpmodel: wpmodel, context: context)
+            ],
+          ),
         ),
       ),
     );
@@ -119,24 +136,31 @@ class TileKategori extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(right: 4),
-      child: Stack(
-        children: <Widget> [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.network(imageURL, height: 50, width: 100, fit: BoxFit.cover,)
-          ),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.black26,
-              borderRadius: BorderRadius.circular(8)
+    return GestureDetector(
+      onTap: (){
+        Navigator.push(context, MaterialPageRoute(
+          builder: (context) => Kategori(namaKategori: title.toLowerCase())
+        ));
+      },
+      child: Container(
+        margin: EdgeInsets.only(right: 4),
+        child: Stack(
+          children: <Widget> [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(imageURL, height: 50, width: 100, fit: BoxFit.cover,)
             ),
-            height: 50, width: 100,
-            alignment: Alignment.center,
-            child: Text(title, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),),
-          )
-        ],
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.black26,
+                borderRadius: BorderRadius.circular(8)
+              ),
+              height: 50, width: 100,
+              alignment: Alignment.center,
+              child: Text(title, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),),
+            )
+          ],
+        ),
       ),
     );
   }

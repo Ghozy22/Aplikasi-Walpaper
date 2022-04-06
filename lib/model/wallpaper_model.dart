@@ -22,14 +22,14 @@ class wallpaperModel{
 class srcModel{
 
   String ?original;
-  String ?email;
+  String ?small;
   String ?portrait;
 
-  srcModel({this.email, this.original, this.portrait});
+  srcModel({this.small, this.original, this.portrait});
 
   factory srcModel.fromMap(Map<String, dynamic> jsonData) {
     return srcModel(
-        email: jsonData["small"],
+        small: jsonData["small"],
         original: jsonData["original"],
         portrait: jsonData["portrait"]);
   }
