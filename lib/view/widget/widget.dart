@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wallpaper/model/wallpaper_model.dart';
 
+
 Widget brandName() {
   return Row(
     mainAxisAlignment: MainAxisAlignment.center,
